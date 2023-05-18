@@ -1,7 +1,8 @@
 import { useState } from "react";
 import sign2up from "../assest/sign2up.jpg";
 import { BiShow, BiHide } from "react-icons/bi";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-hot-toast";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -9,7 +10,7 @@ const Login = () => {
     email: "",
     password: "",
   });
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
   const handleShowPassword = () => {
     setShowPassword(!showPassword);
   };
@@ -28,7 +29,25 @@ const Login = () => {
     e.preventDefault();
     const { email, password } = data;
     if (email && password) {
-      alert("succssesfull");
+      const fetchData = await fetch(
+        `${process.env.REACT_APP_SERVER_DOMIN}/login`,
+        {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+          },
+          body: JSON.stringify(data),
+        }
+      );
+
+      const dataRes = await fetchData.json();
+      console.log(dataRes);
+      toast(dataRes.message);
+      if (dataRes.alert) {
+        setTimeout(() => {
+          navigate("/");
+        }, 1000);
+      }
     } else {
       alert("Please Enter required fields");
     }
@@ -76,7 +95,7 @@ const Login = () => {
           </button>
         </form>
         <p className="text-left text-sm mt-2">
-        Don&apos;t  have account ?{" "}
+          Don&apos;t have account ?{" "}
           <Link to={"/signup"} className="text-green-700 underline">
             Sign Up
           </Link>
