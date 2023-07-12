@@ -3,6 +3,8 @@ import sign2up from "../assest/sign2up.jpg";
 import { BiShow, BiHide } from "react-icons/bi";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
+import { useDispatch, useSelector } from "react-redux";
+import { loginRedux } from "../redux/userSlice";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -11,6 +13,10 @@ const Login = () => {
     password: "",
   });
   const navigate = useNavigate();
+  const userData = useSelector((state) => state);
+
+  const dispatch = useDispatch();
+
   const handleShowPassword = () => {
     setShowPassword(!showPassword);
   };
@@ -42,11 +48,14 @@ const Login = () => {
 
       const dataRes = await fetchData.json();
       console.log(dataRes);
+
       toast(dataRes.message);
       if (dataRes.alert) {
+        dispatch(loginRedux(dataRes));
         setTimeout(() => {
           navigate("/");
         }, 1000);
+        console.log(userData);
       }
     } else {
       alert("Please Enter required fields");
